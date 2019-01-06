@@ -368,6 +368,18 @@ EndSection
 EOL
 }
 
+# modesetting displaylink xorg.conf
+xorg_modesetting_newgen(){
+cat > $xorg_config_displaylink <<EOL
+Section "OutputClass"
+    Identifier  "DisplayLink"
+    MatchDriver "evdi"
+    Driver      "modesetting"
+    Option      "AccelMethod" "none"
+EndSection
+EOL
+}
+
 # nvidia displaylink xorg.conf
 xorg_nvidia(){
 cat > $xorg_config_displaylink <<EOL
@@ -394,7 +406,12 @@ then
 		# set xorg modesetting for Intel cards (issue: 179, 68, 88, 192)
 		if [ "$cardsub" == "v2/3rd" ] || [ "$cardsub" == "[HD" ] || [ "$cardsub" == "620" ] || [ "$cardsub" == "540" ];
 		then
-				xorg_modesetting
+				if [ "$(ver2int $xorg_vcheck)" -gt "$(ver2int $newgen_xorg)" ];
+				then
+						xorg_modesetting_newgen
+				else
+						xorg_modesetting
+				fi
 		# generic intel
 		else
 				xorg_intel
@@ -405,7 +422,13 @@ then
 		# set xorg modesetting for Intel cards (issue: 176, 179)
 		if [ "$cardsub" == "GP106" ];
 		then
-				xorg_modesetting
+				# Todo: this needs to be revamped, it doesn't work for Nvidia
+				if [ "$(ver2int $xorg_vcheck)" -gt "$(ver2int $newgen_xorg)" ];
+				then
+						xorg_modesetting_newgen
+				else
+						xorg_modesetting
+				fi
 		# generic nvidia
 		else
 				xorg_nvidia
@@ -415,8 +438,13 @@ elif [ "$drv" == "amdgpu" ];
 then
 		xorg_amd
 # default xorg modesetting
-else
-		xorg_modesetting
+elif
+		if [ "$(ver2int $xorg_vcheck)" -gt "$(ver2int $newgen_xorg)" ];
+		then
+				xorg_modesetting_newgen
+		else
+				xorg_modesetting
+		fi
 fi
 
 chown root: $xorg_config_displaylink
@@ -427,8 +455,10 @@ function ver2int {
 echo "$@" | awk -F "." '{ printf("%03d%03d%03d\n", $1,$2,$3); }';
 }
 
+function xorg_check{
 xorg_vcheck="$(dpkg -l | grep "ii  xserver-xorg-core" | awk '{print $3}' | sed 's/[^,:]*://g')"
 min_xorg=1.18.3
+newgen_xorg=1.19.6
 
 if [ "$(ver2int $xorg_vcheck)" -gt "$(ver2int $min_xorg)" ];
 then
@@ -437,6 +467,9 @@ then
 else
 	echo "No need to disable PageFlip for modesetting"
 fi
+}
+
+# end post_install
 }
 
 # uninstall
