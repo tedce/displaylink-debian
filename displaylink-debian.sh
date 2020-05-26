@@ -202,6 +202,16 @@ then
 		message
 		exit 1
 	fi
+# Mint LMDE (debian based mint)
+elif [ "$lsb" == "Linuxmint" ];
+then
+	if [ $codename == "debbie" ];
+	then
+		echo -e "\nPlatform requirements satisfied, proceeding..."
+	else
+		message
+		exit 1
+	fi
 # Kali
 elif [ "$lsb" == "Kali" ];
 then
@@ -425,7 +435,7 @@ sysinitdaemon=$(sysinitdaemon_get)
 sed -i "s/SYSTEMINITDAEMON=unknown/SYSTEMINITDAEMON=$sysinitdaemon/g" $driver_dir/displaylink-driver-${version}/displaylink-installer.sh
 
 # issue: 227
-if [ "$lsb" == "Debian" ] || [ "$lsb" == "Devuan" ] || [ "$lsb" == "Kali" ] || [ "$lsb" == "Deepin" ] || [ "$lsb" == "BunsenLabs" ] || [ "$lsb" == "MX" ];
+if [ "$lsb" == "Debian" ] || [ "$lsb" == "Devuan" ] || [ "$lsb" == "Kali" ] || [ "$lsb" == "Deepin" ] || [ "$lsb" == "BunsenLabs" ] || [ "$lsb" == "MX" ] || [ "$codename" == "debbie" ];
 then
 	sed -i 's#/lib/modules/$KVER/build/Kconfig#/lib/modules/$KVER/build/scripts/kconfig/conf#g' $driver_dir/displaylink-driver-${version}/displaylink-installer.sh
 	ln -s /lib/modules/$(uname -r)/build/Makefile /lib/modules/$(uname -r)/build/Kconfig
@@ -508,7 +518,7 @@ fi
 
 # fix: issue #42 (dlm.service can't start)
 # note: for this to work libstdc++6 package needs to be installed from >= Stretch
-if [ "$lsb" == "Debian" ] || [ "$lsb" == "Devuan" ] || [ "$lsb" == "Kali" ];
+if [ "$lsb" == "Debian" ] || [ "$lsb" == "Devuan" ] || [ "$lsb" == "Kali" ] || [ "$codename" == "debbie" ];
 then
 	ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /opt/displaylink/libstdc++.so.6
 fi
