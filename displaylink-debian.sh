@@ -148,7 +148,7 @@ echo -e "Unsuported platform: $platform"
 echo -e "Full list of all supported platforms: http://bit.ly/2zrwz2u"
 echo -e ""
 echo -e "This tool is Open Source and feel free to extend it"
-echo -e "GitHub repo: https://github.com/AdnanHodzic/displaylink-debian/"
+echo -e "GitHub repo: https://github.com/tedce/displaylink-debian/"
 echo -e "\n---------------------------------------------------------------\n"
 }
 
@@ -438,7 +438,7 @@ sed -i "s/SYSTEMINITDAEMON=unknown/SYSTEMINITDAEMON=$sysinitdaemon/g" $driver_di
 if [ "$lsb" == "Debian" ] || [ "$lsb" == "Devuan" ] || [ "$lsb" == "Kali" ] || [ "$lsb" == "Deepin" ] || [ "$lsb" == "BunsenLabs" ] || [ "$lsb" == "MX" ] || [ "$codename" == "debbie" ];
 then
 	sed -i 's#/lib/modules/$KVER/build/Kconfig#/lib/modules/$KVER/build/scripts/kconfig/conf#g' $driver_dir/displaylink-driver-${version}/displaylink-installer.sh
-	ln -s /lib/modules/$(uname -r)/build/Makefile /lib/modules/$(uname -r)/build/Kconfig
+	ln -sfn /lib/modules/$(uname -r)/build/Makefile /lib/modules/$(uname -r)/build/Kconfig
 fi
 
 
